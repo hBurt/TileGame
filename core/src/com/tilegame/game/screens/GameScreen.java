@@ -22,7 +22,6 @@ public class GameScreen extends AbstractScreen {
 
 
     private SpriteBatch batch;
-    private TextureAtlas atlas;
     private OrthographicCamera camera;
     private FitViewport viewport;
 
@@ -33,27 +32,33 @@ public class GameScreen extends AbstractScreen {
     public GameScreen(TileGame app) {
         super(app);
         batch = new SpriteBatch();
-        atlas = getApp().getAssetManager().get("textures.atlas", TextureAtlas.class);
 
         camera = new OrthographicCamera();
         viewport = new FitViewport(V_WIDTH, V_HEIGHT, camera);
 
         mapLoader = new TmxMapLoader();
         map = mapLoader.load("16x16.tmx");
-        renderer = new OrthogonalTiledMapRenderer(map);
+        renderer = new OrthogonalTiledMapRenderer(map, 1/16f);
 
         float width = viewport.getWorldWidth();
         float height = viewport.getWorldHeight();
 
-        camera.position.set(width / 2, height / 2, 0);
-        camera.zoom /= 2f;
+        //Set our camera
+        // '/2' centers our game , '/16' scales to unit scale no we can get our tiles :)
+        camera.position.set((width / 2) / 16, (height / 2) / 16, 0);
+
+        //Zoom in our camera by the scaled amount multiplied by 2
+        camera.zoom /= 32f; //This is what we use to zoom our game
     }
 
     public void update(float delta){
         //Check for any input first
         handleInput(delta);
+
         //Update our camera after inputs
         camera.update();
+
+        //update camera every frame
         renderer.setView(camera);
     }
 
@@ -62,12 +67,6 @@ public class GameScreen extends AbstractScreen {
         update(delta);
 
         batch.setProjectionMatrix(camera.combined);
-
-        //Draw stuff
-        batch.begin();
-        //When we Load our map, the width and height will be our tile maps x and y length(eg 100x100 tiles)
-        batch.draw(atlas.findRegion("badlogic"), 0,0,256, 256);
-        batch.end();
 
         renderer.render();
     }
@@ -79,21 +78,28 @@ public class GameScreen extends AbstractScreen {
 
     private void handleInput(float delta){
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT)){
-            camera.position.x -= 200 * delta;
+            camera.position.x -= 100 * delta;
         }
         if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
-            camera.position.x += 200 * delta;
+            camera.position.x += 100 * delta;
         }
         if(Gdx.input.isKeyPressed(Input.Keys.UP)){
-            camera.position.y += 200 * delta;
+            camera.position.y += 100 * delta;
         }
         if(Gdx.input.isKeyPressed(Input.Keys.DOWN)){
-            camera.position.y -= 200 * delta;
+            camera.position.y -= 100 * delta;
         }
-        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+
+            //Gets coordinates click on screen(relative to pixels)
             Vector3 input = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+
+            //Unproject input coordinates from screen to our game
             Vector3 u = camera.unproject(input);
-            System.out.print(u.x + " : " + u.y + "\n");
+
+            //Display
+            //Reminder: 'Math.floor' rounds down (eg 99.99999 == 99)
+            System.out.print("Clicked tile: " + Math.floor(u.x) + " : " + Math.floor(u.y) + "\n");
         }
     }
 
