@@ -3,8 +3,11 @@ package com.tilegame.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.tilegame.game.screens.GameScreen;
 
 public class TileGame extends Game {
@@ -19,6 +22,8 @@ public class TileGame extends Game {
 		//To create textures use: TexturePacker
 		assetManager = new AssetManager();
 		assetManager.load("textures.atlas", TextureAtlas.class);
+		assetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+		assetManager.load("16x16.tmx", TiledMap.class);
 		assetManager.finishLoading();
 
 		screen = new GameScreen(this); //must come after asset manager
@@ -34,7 +39,7 @@ public class TileGame extends Game {
 		//Set background buffered bit to black
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 
-		super.render();
+		super.render(); //Delegate render method to current active screen
 	}
 
 
