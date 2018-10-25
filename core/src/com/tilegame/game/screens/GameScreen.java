@@ -40,14 +40,13 @@ public class GameScreen extends AbstractScreen {
 
         mapLoader = new TmxMapLoader();
         map = mapLoader.load("16x16.tmx");
-        renderer = new OrthogonalTiledMapRenderer(map, 1/16f);
+        renderer = new OrthogonalTiledMapRenderer(map);
 
         float width = viewport.getWorldWidth();
         float height = viewport.getWorldHeight();
 
         camera.position.set(width / 2, height / 2, 0);
-        camera.setToOrtho(false, (width / 2) / 16, (height / 2) / 16);
-        camera.zoom /= 16;
+        camera.zoom /= 2f;
     }
 
     public void update(float delta){
@@ -67,7 +66,7 @@ public class GameScreen extends AbstractScreen {
         //Draw stuff
         batch.begin();
         //When we Load our map, the width and height will be our tile maps x and y length(eg 100x100 tiles)
-        //batch.draw(atlas.findRegion("badlogic"), 0,0,256, 256);
+        batch.draw(atlas.findRegion("badlogic"), 0,0,256, 256);
         batch.end();
 
         renderer.render();
