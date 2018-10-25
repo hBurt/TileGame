@@ -12,6 +12,10 @@ import com.tilegame.game.screens.GameScreen;
 
 public class TileGame extends Game {
 
+	public static final int V_WIDTH = 416; //16bit game scaled by 2 * 9 tiles tall
+	public static final int V_HEIGHT = 288;//16bit game scaled by 2 * 13 tiles wide
+
+
 	private GameScreen screen;
 
 	private AssetManager assetManager;
@@ -22,6 +26,7 @@ public class TileGame extends Game {
 		//To create textures use: TexturePacker
 		assetManager = new AssetManager();
 		assetManager.load("textures.atlas", TextureAtlas.class);
+
 		assetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
 		assetManager.load("16x16.tmx", TiledMap.class);
 		assetManager.finishLoading();
