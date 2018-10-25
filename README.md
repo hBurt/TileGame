@@ -2,7 +2,8 @@
 
 - added screens
 - added asset manager for easier managing of images
-- upjrojecting 
+- loaded tilemap
+- added camera / viewport
 
 # GameScreen
 
