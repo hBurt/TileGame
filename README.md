@@ -1,12 +1,7 @@
-# GameScreen
+#TileGame : Clickable tiles for libgdx 
+- Note: If your tiles are glitchy when you move around the map with your camera, refer to: ![this post](https://stackoverflow.com/questions/23144367/why-do-i-have-lines-going-across-my-libgdx-game-using-tiled). Further examination shows that, your tilemap's .png source will need padding to accomidate for rendering.
+
 - Clickable tiles are working
-- Note: tiles are glitchy when you change the 'camera.position', refer to: ![this post](https://stackoverflow.com/questions/23144367/why-do-i-have-lines-going-across-my-libgdx-game-using-tiled). Basically, just use a different tilemap
-![this](https://i.imgur.com/HYIflfB.gif "Working Tiles!")
+![this](https://i.imgur.com/zB6Ts7c.gif "fixed upjrojecting math")
 
-# TileGame : Clickable tiles for libgdx 
-
-- added screens
-- added asset manager for easier managing of images
-- loaded tilemap
-- added camera / viewport
 
