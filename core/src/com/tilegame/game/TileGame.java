@@ -25,7 +25,7 @@ public class TileGame extends Game {
 
 		//To create textures use: TexturePacker
 		assetManager = new AssetManager();
-		assetManager.load("textures.atlas", TextureAtlas.class);
+		//assetManager.load("textures.atlas", TextureAtlas.class);
 
 		assetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
 		assetManager.load("16xnew.tmx", TiledMap.class);
