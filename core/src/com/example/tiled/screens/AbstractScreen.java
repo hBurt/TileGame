@@ -1,7 +1,7 @@
-package com.tilegame.game.screens;
+package com.example.tiled.screens;
 
 import com.badlogic.gdx.Screen;
-import com.tilegame.game.TileGame;
+import com.example.tiled.ExampleTiledGame;
 
 /**
  * Created by: Harrison on 23 Oct 2018
@@ -9,9 +9,9 @@ import com.tilegame.game.TileGame;
 
 public class AbstractScreen implements Screen {
 
-    private TileGame app;
+    private ExampleTiledGame app;
 
-    public AbstractScreen(TileGame app) {
+    public AbstractScreen(ExampleTiledGame app) {
         this.app = app;
     }
 
@@ -50,7 +50,7 @@ public class AbstractScreen implements Screen {
 
     }
 
-    public TileGame getApp() {
+    public ExampleTiledGame getApp() {
         return app;
     }
 }

@@ -1,17 +1,17 @@
-package com.tilegame.game;
+package com.example.tiled;
 
 import org.robovm.apple.foundation.NSAutoreleasePool;
 import org.robovm.apple.uikit.UIApplication;
 
 import com.badlogic.gdx.backends.iosrobovm.IOSApplication;
 import com.badlogic.gdx.backends.iosrobovm.IOSApplicationConfiguration;
-import com.tilegame.game.TileGame;
+import com.example.tiled.ExampleTiledGame;
 
 public class IOSLauncher extends IOSApplication.Delegate {
     @Override
     protected IOSApplication createApplication() {
         IOSApplicationConfiguration config = new IOSApplicationConfiguration();
-        return new IOSApplication(new TileGame(), config);
+        return new IOSApplication(new ExampleTiledGame(), config);
     }
 
     public static void main(String[] argv) {

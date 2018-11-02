@@ -1,4 +1,4 @@
-package com.tilegame.game;
+package com.example.tiled;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -8,12 +8,12 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.tilegame.game.screens.GameScreen;
+import com.example.tiled.screens.GameScreen;
 
-public class TileGame extends Game {
+public class ExampleTiledGame extends Game {
 
-	public static final int V_WIDTH = 480; //16bit game scaled by 2 * 9 tiles tall
-	public static final int V_HEIGHT = 480;//16bit game scaled by 2 * 13 tiles wide
+	public static final int V_WIDTH = 832; //16bit game scaled by 32 * 13 tiles tall
+	public static final int V_HEIGHT = 576;//16bit game scaled by 32 * 9 tiles wide
 
 
 	private GameScreen screen;
@@ -25,8 +25,7 @@ public class TileGame extends Game {
 
 		//To create textures use: TexturePacker
 		assetManager = new AssetManager();
-		//assetManager.load("textures.atlas", TextureAtlas.class);
-
+		assetManager.load("character/textures.atlas", TextureAtlas.class);
 		assetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
 		assetManager.load("16xnew.tmx", TiledMap.class);
 		assetManager.finishLoading();
