@@ -1,9 +1,13 @@
 package com.example.tiled.models;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Interpolation;
+import com.example.tiled.ExampleTiledGame;
 
 /**
  * Created by: Harrison on 26 Oct 2018
@@ -14,52 +18,67 @@ public class Player {
     private int x, y;
 
     private int colideX, colideY;
-    TiledMap map;
+    private TiledMap map;
 
-    int mapWidth, mapHeight;
+    private int mapWidth, mapHeight;
 
     private float worldX, worldY;
-    int srcX, srcY;
-    int desX, desY;
-    float animTimer;
-    private float ANIM_TIME = .4f;
+    private int srcX, srcY;
+    private int desX, desY;
+    private float animTimer;
+    //Player speed
+    private float ANIM_TIME = .3f;
     private boolean[][] collision;
 
-    private float walkTimer;
+    private Direction facingDir;
+    private ACTOR_STATE currentState;
+
+    private AnimationSet animations;
+
     private boolean moveRequestThisFrame;
 
-    private ACTOR_STATE state;
+    private float walkTimer;
 
     //Construct the player class
-    public Player(TiledMap map, int posX, int posY) {
+    public Player(TiledMap map, int posX, int posY, ExampleTiledGame app) {
         this.map = map;
         this.x = posX;
         this.y = posY;
         this.worldX = x;
         this.worldY = y;
+        currentState = ACTOR_STATE.STANDING;
+        facingDir = Direction.SOUTH;
+
+
+        MapLayers mapLayers = map.getLayers();
+
+        TextureAtlas atlas = app.getAssetManager().get("character/textures.atlas", TextureAtlas.class);
+
+        animations = new AnimationSet(
+                new Animation<TextureRegion>(0.3f / 2f, atlas.findRegions("player_walk_north"), Animation.PlayMode.LOOP_PINGPONG),
+                new Animation<TextureRegion>(0.3f / 2f, atlas.findRegions("player_walk_south"), Animation.PlayMode.LOOP_PINGPONG),
+                new Animation<TextureRegion>(0.3f / 2f, atlas.findRegions("player_walk_east"), Animation.PlayMode.LOOP_PINGPONG),
+                new Animation<TextureRegion>(0.3f / 2f, atlas.findRegions("player_walk_west"), Animation.PlayMode.LOOP_PINGPONG),
+                atlas.findRegion("player_stand_north"),
+                atlas.findRegion("player_stand_south"),
+                atlas.findRegion("player_stand_east"),
+                atlas.findRegion("player_stand_west"));
+
         mapWidth = map.getProperties().get("width", Integer.class);
         mapHeight = map.getProperties().get("height", Integer.class);
-        this.state = ACTOR_STATE.STANDING;
         collision = new boolean[mapWidth][mapHeight];
-        setColide();
+
+        setColide((TiledMapTileLayer) mapLayers.get("walls"));
     }
-    //Retrieve our maps layers
-    //MapLayers ml = map.getLayers();
 
-    //Get the layer related to collisoion
-    //layer = (TiledMapTileLayer) ml.get("walls");
-
-    //If this == null, then no collision.
-    //System.out.print("This: " + layer.getCell(1,1).getTile().getId());
-    private void setColide(){
-        MapLayers mapLayers = map.getLayers();
-        TiledMapTileLayer tmtl = (TiledMapTileLayer) mapLayers.get("walls");
+    //Set collision tiles
+    private void setColide(TiledMapTileLayer tiledMapTileLayer){
         for(int x = 0; x < mapWidth; x ++){
             for(int y = 0; y < mapHeight; y ++) {
                 collision[x][y] = true;
-                //Grab everytile in 'walls' layer.
+                //Grab every tile in the 'walls' layer.
                 //Note: if tile is null, it is walkable
-                if(tmtl.getCell(x, y) != null) {
+                if(tiledMapTileLayer.getCell(x, y) != null) {
                      collision[x][y] = false;
                     //System.out.print(tmtl.getCell(x, y).getTile().getId());
                 }
@@ -68,20 +87,34 @@ public class Player {
     }
 
     public void update(float delta){
-        if( state == ACTOR_STATE.WALKING){
+        if( currentState == ACTOR_STATE.WALKING){
             animTimer += delta;
+            walkTimer += delta;
             worldX = Interpolation.linear.apply(srcX, desX, animTimer / ANIM_TIME);   //World x not greater than desX
             worldY = Interpolation.linear.apply(srcY, desY, animTimer / ANIM_TIME);   //World x not greater than desX
             if(animTimer > ANIM_TIME){
+                float leftOverTime = animTimer - ANIM_TIME;
                 finishMove();
-                state = ACTOR_STATE.STANDING;
+                if(moveRequestThisFrame){
+                    if(move(facingDir)) {
+                        animTimer += leftOverTime;
+                        worldX = Interpolation.linear.apply(srcX, desX, animTimer / ANIM_TIME);
+                        worldY = Interpolation.linear.apply(srcY, desY, animTimer / ANIM_TIME);
+                    }
+                } else {
+                    walkTimer = 0f;
+                }
             }
         }
+        moveRequestThisFrame = false;
     }
 
     //Players simple move method
     public boolean move(Direction direction){
-        if(state != ACTOR_STATE.STANDING){
+        if(currentState == ACTOR_STATE.WALKING){
+            if(facingDir == direction){
+                moveRequestThisFrame = true;
+            }
             return false;
         }
         if(x + direction.getDx() >= mapWidth || x + direction.getDx() < 0 || y + direction.getDy() >= mapHeight || y + direction.getDy() < 0){
@@ -93,6 +126,8 @@ public class Player {
             colideY = y + direction.getDy();
             return false;
         }
+        //Set our players facing direction to use for animations
+        facingDir = direction;
 
         initalizeMove(x, y, direction.getDx(), direction.getDy());
         //Set players x and y relative to the addition/subtraction from direction
@@ -112,11 +147,11 @@ public class Player {
         this.worldX = x;
         this.worldY = y;
         animTimer = 0f;
-        state = ACTOR_STATE.WALKING;
+        currentState = ACTOR_STATE.WALKING;
     }
 
     private void finishMove() {
-        state = ACTOR_STATE.STANDING;
+        currentState = ACTOR_STATE.STANDING;
         this.worldX = desX;
         this.worldY = desY;
         this.srcX = 0;
@@ -124,6 +159,16 @@ public class Player {
         this.desX = 0;
         this.desY = 0;
     }
+
+    public TextureRegion getTexture(){
+        if(currentState == ACTOR_STATE.STANDING){
+            return animations.getStanding(facingDir);
+        } else if(currentState == ACTOR_STATE.WALKING){
+            return animations.getWalking(facingDir).getKeyFrame(walkTimer);
+        }
+        return animations.getStanding(facingDir);
+    }
+
 
     public float getWorldX() {
         return worldX;
@@ -155,5 +200,7 @@ public class Player {
     public float getY() {
         return y;
     }
+
+
 
 }

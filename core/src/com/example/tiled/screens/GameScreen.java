@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -30,7 +29,6 @@ public class GameScreen extends AbstractScreen {
     private OrthogonalTiledMapRenderer renderer;
 
     private TextureAtlas atlas;
-    private TextureRegion texture;
 
     private SpriteBatch batch;
     private Hud hud;
@@ -47,10 +45,6 @@ public class GameScreen extends AbstractScreen {
 
         //New HUD
         hud = new Hud(batch);
-
-        //Load Texture as player
-        atlas = app.getAssetManager().get("character/textures.atlas", TextureAtlas.class);
-        texture = atlas.findRegion("player_stand_south");
 
         //Create a Orthographic cam
         camera = new OrthographicCamera();
@@ -72,7 +66,7 @@ public class GameScreen extends AbstractScreen {
         float height = viewport.getWorldHeight();
 
         //Add a new player to our map
-        player = new Player(map, 2,2);
+        player = new Player(map, 2,2, app);
 
         //Properly scale our camera
         camera.setToOrtho(false, (width / Settings.tileSize) / Settings.gameScale, (height / Settings.tileSize) / Settings.gameScale);
@@ -128,12 +122,14 @@ public class GameScreen extends AbstractScreen {
 
         //Start our batch
         batch.begin();
-        batch.draw(texture,
-                worldStartX + player.getWorldX() * 32f, //Players x
-                worldStartY + player.getWorldY() * 32f, //Players Y
-                Settings.gameScale * Settings.tileSize, //tile size
-                Settings.gameScale * Settings.tileSize  //tile size
-        );
+        if(player != null) {
+            batch.draw(player.getTexture(),
+                    worldStartX + player.getWorldX() * 32f, //Players x
+                    worldStartY + player.getWorldY() * 32f, //Players Y
+                    Settings.gameScale * Settings.tileSize, //tile size
+                    Settings.gameScale * Settings.tileSize  //tile size
+            );
+        }
         batch.end();
 
         //Draw hud

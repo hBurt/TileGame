@@ -32,7 +32,9 @@ public class ExampleTiledGame extends Game {
 
 		screen = new GameScreen(this); //must come after asset manager
 
-		this.setScreen(screen);
+		if(assetManager.update()) {
+			this.setScreen(screen);
+		}
 	}
 
 	@Override
