@@ -9,6 +9,7 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.allowSoftwareMode = true;
 		config.vSyncEnabled = true;
+		config.title = "Game";
 		new LwjglApplication(new ExampleTiledGame(), config);
 	}
 }
