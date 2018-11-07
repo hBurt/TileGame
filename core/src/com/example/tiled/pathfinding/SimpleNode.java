@@ -1,34 +1,37 @@
 
 package com.example.tiled.pathfinding;
+
+import com.badlogic.gdx.ai.pfa.Connection;
+import com.badlogic.gdx.ai.pfa.DefaultConnection;
+import com.badlogic.gdx.utils.Array;
+
+import java.util.Locale;
+
 /**
  * Created by: Harrison on 03 Nov 2018
  */
 public class SimpleNode {
 
-    int x, y;
+    //Node x pos
+    int x;
 
-    private int g;
-    private int h;
+    //Node y pos
+    int y;
 
-    private int f;
+    //Node index
+    int index;
 
-    int cost;
+    //Is node part of larger path?
 
-    private boolean open;
+    private boolean isSelected;
+    /** The neighbours of this node. i.e to which node can we travel to from here. */
+    Array<Connection<SimpleNode>> connections = new Array<Connection<SimpleNode>>();
 
-    public SimpleNode(int x, int y, int cost) {
+    public SimpleNode(int x, int y, int index) {
         this.x = x;
         this.y = y;
-        this.cost = cost;
-        this.open = true;
-    }
-
-
-    enum NodeOrientation {
-        NORTH,
-        SOUTH,
-        EAST,
-        WEST
+        this.index = index;
+        this.isSelected = false;
     }
 
     public int getX() {
@@ -39,33 +42,40 @@ public class SimpleNode {
         return y;
     }
 
-    public int getF() {
-        return f;
+    public int getIndex() {
+        return index;
     }
 
-    public boolean isOpen() {
-        return open;
+    public boolean isSelected() {
+        return isSelected;
     }
 
-    public void setOpen(boolean open) {
-        this.open = open;
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 
-    public SimpleNode getNextOrient(NodeOrientation o){
-        if(o == NodeOrientation.NORTH){
-            return new SimpleNode(x, y + 1, cost);
-        } else if (o == NodeOrientation.SOUTH){
-            return new SimpleNode(x, y - 1, cost);
-        } else if (o == NodeOrientation.EAST){
-            return new SimpleNode(x + 1, y, cost);
-        } else if (o == NodeOrientation.WEST){
-            return new SimpleNode(x - 1, y, cost);
+    public void select(){
+        this.isSelected = true;
+    }
+
+    public String toString() {
+        return String.format(Locale.getDefault(), "Index:%d x:%d y:%d", index, x, y);
+    }
+
+    public Array<Connection<SimpleNode>> getConnections() {
+        return connections;
+    }
+
+    public boolean peek(int x, int y){
+        //if int x and int y = this x and this y then return true
+        return this.x == x && this.y == y;
+    }
+
+    public void addNeighbour(SimpleNode aNode) {
+        if (null != aNode) {
+            //Sets cost to move connection to 1f
+            connections.add(new DefaultConnection<SimpleNode>(this, aNode));
         }
-        return null;
-    }
-
-    public int getCost() {
-        return cost;
     }
 
 }

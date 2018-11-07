@@ -33,12 +33,12 @@ public class GameScreen extends AbstractScreen {
 
         //Add a new player to our map
         //Subtract this players position from our font batch draw player x and y to calculate proper node positions.
-        player = new Player(worldLoader.getMap(), 2,2, app);
+        player = new Player(worldLoader.getMap(), 2,2, app, worldLoader.getSimpleNodes());
 
         worldLoader.addPlayer(player);
 
         //Create the new inputHandler
-        ih = new InputHandler(worldLoader.getMap(), player, worldLoader.getCamera(), worldLoader.getViewport());
+        ih = new InputHandler(worldLoader.getMap(), player, worldLoader.getCamera(), worldLoader.getViewport(), worldLoader);
     }
 
     @Override

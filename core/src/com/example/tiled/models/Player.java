@@ -7,7 +7,9 @@ import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.utils.Array;
 import com.example.tiled.ExampleTiledGame;
+import com.example.tiled.pathfinding.SimpleNode;
 
 /**
  * Created by: Harrison on 26 Oct 2018
@@ -19,6 +21,8 @@ public class Player {
 
     private int colideX, colideY;
     private TiledMap map;
+
+    private boolean isWalking;
 
     private int mapWidth, mapHeight;
 
@@ -33,22 +37,30 @@ public class Player {
     private Direction facingDir;
     private ACTOR_STATE currentState;
 
+    public AnimationSet getAnimations() {
+        return animations;
+    }
+
     private AnimationSet animations;
 
     private boolean moveRequestThisFrame;
 
     private float walkTimer;
 
+    private Array<SimpleNode> simpleNodes;
+
     //Construct the player class
-    public Player(TiledMap map, int posX, int posY, ExampleTiledGame app) {
+    public Player(TiledMap map, int posX, int posY, ExampleTiledGame app, Array<SimpleNode> simpleNodes) {
         this.map = map;
         this.x = posX;
         this.y = posY;
         this.worldX = x;
         this.worldY = y;
+        this.isWalking = false;
         currentState = ACTOR_STATE.STANDING;
         facingDir = Direction.SOUTH;
 
+        this.simpleNodes = simpleNodes;
 
         MapLayers mapLayers = map.getLayers();
 
@@ -90,8 +102,8 @@ public class Player {
         if( currentState == ACTOR_STATE.WALKING){
             animTimer += delta;
             walkTimer += delta;
-            worldX = Interpolation.linear.apply(srcX, desX, animTimer / ANIM_TIME);   //World x not greater than desX
-            worldY = Interpolation.linear.apply(srcY, desY, animTimer / ANIM_TIME);   //World x not greater than desX
+            worldX = Interpolation.linear.apply(srcX, desX, animTimer / ANIM_TIME);   //WorldLoader x not greater than desX
+            worldY = Interpolation.linear.apply(srcY, desY, animTimer / ANIM_TIME);   //WorldLoader x not greater than desX
             if(animTimer > ANIM_TIME){
                 float leftOverTime = animTimer - ANIM_TIME;
                 finishMove();
@@ -139,6 +151,27 @@ public class Player {
         return true;
     }
 
+
+    //Had to reverse them??
+    public void walkTo(int x, int y){
+        if(getWorldX() == x + 1 && getWorldY() == y){   //Right (east)
+            move(Direction.WEST);
+            System.out.println("Do walk west");
+        }
+        if(getWorldX() == x - 1 && getWorldY() == y){   //Left (west)
+            move(Direction.EAST);
+            System.out.println("Do walk east");
+        }
+        if(getWorldX() == x && getWorldY() == y + 1){   //Up (north)
+            move(Direction.SOUTH);
+            System.out.println("Do walk south");
+        }
+        if(getWorldX() == x && getWorldY() == y - 1){   //Down (south)
+            move(Direction.NORTH);
+            System.out.println("Do walk north");
+        }
+    }
+
     private void initalizeMove(int oldX, int oldY, int dx, int dy){
         this.srcX = x;
         this.srcY = y;
@@ -167,6 +200,24 @@ public class Player {
             return animations.getWalking(facingDir).getKeyFrame(walkTimer);
         }
         return animations.getStanding(facingDir);
+    }
+
+    public int getID(){
+        for (SimpleNode s : simpleNodes) {
+            //If coords of s node == player x & y
+            if(s.peek((int) Math.floor(getWorldX()), (int) Math.floor(getWorldY()))){
+                return s.getIndex();
+            }
+        }
+        return -1;
+    }
+
+    public boolean isWalking() {
+        return isWalking;
+    }
+
+    public void setWalking(boolean walking) {
+        isWalking = walking;
     }
 
 

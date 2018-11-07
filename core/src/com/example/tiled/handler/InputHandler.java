@@ -6,9 +6,12 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.example.tiled.models.Direction;
 import com.example.tiled.models.Player;
+import com.example.tiled.models.WorldLoader;
+import com.example.tiled.pathfinding.SimpleNode;
 
 /**
  * Created by: Harrison on 26 Oct 2018
@@ -24,10 +27,13 @@ public class InputHandler extends InputAdapter {
 
     private int sizeX, sizeY;
 
-    public InputHandler(TiledMap map, Player player, OrthographicCamera camera, Viewport viewport) {
+    WorldLoader worldLoader;
+
+    public InputHandler(TiledMap map, Player player, OrthographicCamera camera, Viewport viewport, WorldLoader worldLoader) {
         this.player = player;
         this.camera = camera;
         this.viewport = viewport;
+        this.worldLoader = worldLoader;
         sizeX = map.getProperties().get("width", Integer.class);
         sizeY = map.getProperties().get("height", Integer.class);
         buttonPress = new boolean[Direction.values().length];
@@ -156,7 +162,7 @@ public class InputHandler extends InputAdapter {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        //Grab graphics
+        /*//Grab graphics
         int w = Gdx.graphics.getWidth();
         int h = Gdx.graphics.getHeight();
 
@@ -176,13 +182,13 @@ public class InputHandler extends InputAdapter {
                 //down
                 releaseDirection(Direction.SOUTH);
             }
-        }
+        }*/
         return false;
     }
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-
+        /*
         //Grab graphics
         int w = Gdx.graphics.getWidth();
         int h = Gdx.graphics.getHeight();
@@ -200,7 +206,7 @@ public class InputHandler extends InputAdapter {
                 //down
                 buttonPress[Direction.SOUTH.ordinal()] = true;
             }
-        }
+        }*/
 
         if(button == Input.Buttons.LEFT){
 
@@ -208,12 +214,29 @@ public class InputHandler extends InputAdapter {
             Vector3 input = new Vector3(screenX, screenY, 0);
 
             //Unproject input coordinates from screen to our game to retrieve our world coordinates
-            Vector3 u = camera.unproject(input,viewport.getScreenX(),
+            Vector3 u = camera.unproject(input,
+                    viewport.getScreenX(),
                     viewport.getScreenY(),
                     viewport.getScreenWidth(),
                     viewport.getScreenHeight()
             );
 
+            //Save our x and y tile clicks
+            int touchTileX = (int) Math.floor(u.x);
+            int touchTileY = (int) Math.floor(u.y);
+            for(int i = 0; i < worldLoader.getSimpleNodes().size; i++){
+                SimpleNode node = worldLoader.getSimpleNodes().get(i);
+                if(node.peek(touchTileX, touchTileY)){
+                    worldLoader.showPath(player.getID(), node.getIndex());
+                }
+            }
+            /*for (SimpleNode s : worldLoader.getSimpleNodes()) {
+                //if node x & y == touch x & touchY
+                if(s.peek(touchTileX, touchTileY)){
+                    worldLoader.showPath(player.getID(), s.getIndex());
+                    //worldLoader.showPath(s.peek((int) Math.floor(player.getWorldX()), (int) player.getWorldY()), s.getIndex());
+                }
+            }*/
             //Quick debug
             System.out.print("\nDesktop: x,y: " + Math.floor(u.x) + "," + Math.floor(u.y) + "\n");
         }
