@@ -22,15 +22,10 @@ public class Hud {
     private Viewport viewport;
 
     private Vector2 v2;
-    private int worldTimer;
-    private float timeCount;
-    private int score;
 
     Label worldLabel, worldLabel2, worldLabel3, worldLabel4;
 
     public Hud(SpriteBatch sb){
-        worldTimer = 0;
-        timeCount = 0;
 
         viewport = new FitViewport(ExampleTiledGame.V_WIDTH, ExampleTiledGame.V_HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport, sb);
