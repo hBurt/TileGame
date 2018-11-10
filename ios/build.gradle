@@ -4,7 +4,7 @@ sourceCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 ext {
-	mainClassName = "com.example.tiled.IOSLauncher"
+	mainClassName = "com.rouge.life.IOSLauncher"
 }
 
 launchIPhoneSimulator.dependsOn build
